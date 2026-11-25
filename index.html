@@ -70,7 +70,7 @@ table.mx.st td.c{cursor:default}table.mx td.bad{outline:3px solid var(--ko);outl
 .tg{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
 .tc{border:2px solid #ddd;border-radius:10px;padding:12px 10px;cursor:pointer;background:#fff;font-size:16px;font-weight:bold;text-align:center;user-select:none}
 .tc.p1{border-color:var(--o);background:#fff4ee}.tc.p2{border-color:var(--b);background:#eef3ff}
-.tc small{display:block;font-weight:normal;font-size:12px;color:var(--g);margin-top:3px}
+.tc:hover{border-color:var(--o)}.tc small{display:block;font-weight:normal;font-size:12px;color:var(--g);margin-top:3px}
 .ad li{margin:3px 0}
 .bar{display:flex;align-items:center;gap:8px;margin:5px 0;font-size:14px}.bar .nm{width:120px;flex:none}
 .bar .tr{flex:1;background:var(--l);border-radius:5px;height:22px;display:flex;overflow:hidden}
@@ -108,7 +108,7 @@ table.mx.st td.c{cursor:default}table.mx td.bad{outline:3px solid var(--ko);outl
  </div>
  <div class="card">
   <h2>2 · La trappola</h2>
-  <p class="sub" style="margin:0 0 8px">Toccate la trappola principale (arancio). Se ne vedete una seconda, toccatela dopo (blu). Toccandola di nuovo, la togliete.</p>
+  <p class="sub" style="margin:0 0 8px">Passando il mouse su una trappola (o toccandola) compare una breve descrizione. Toccate la trappola principale (arancio). Se ne vedete una seconda, toccatela dopo (blu). Toccandola di nuovo, la togliete.</p>
   <div class="tg" id="tg"></div>
   <div id="adBox"></div>
  </div>
@@ -145,16 +145,16 @@ table.mx.st td.c{cursor:default}table.mx td.bad{outline:3px solid var(--ko);outl
 var API_URL = "https://script.google.com/macros/s/AKfycbz7rufIHmRGmm5CnyR3UQXiHZxR7qIk9EPQBp26WNhd3IRGpS_BQN2sWb2zWzJEMRsI/exec";   // web app Apps Script; se vuoto: modalità locale
 // Le dieci trappole della pillola e i relativi antidoti (modificabili qui)
 var TR = [
- {k:'Calamita',a:['Essere critici','Ascoltare gli altri','Non fermarsi alla prima soluzione']},
- {k:'Abitudine',a:['Ricordare i propri obiettivi','Individuare altre possibilità','Riflettere su circostanze meno ovvie','Analizzare i pro e i contro']},
- {k:'Quercia',a:['Chiedere consigli a chi non era coinvolto','Mettersi in discussione']},
- {k:'Conferma',a:['Non permettere al passato di dominare il presente']},
- {k:'Impostazione',a:['Ricordare l’obiettivo principale','Adottare uno spirito critico']},
- {k:'Sicumera',a:['Non fermarsi all’analisi iniziale','Testare la soluzione in più casistiche']},
- {k:'Prototipo',a:['Non ignorare mai i dati','Mettere in discussione i modelli di riferimento','Ricordare che il modello non è per forza vero']},
- {k:'Catastrofe',a:['Non farsi sviare dalla memoria','Acquisire dati aggiornati','Concentrarsi sulle valutazioni oggettive']},
- {k:'Prudenza',a:['Definire le probabilità e valutare onestamente','Documentare il processo','Ascoltare chi non eccede in prudenza']},
- {k:'Sfera magica',a:['Essere disciplinati','Non fare calcoli sbagliati','Considerare solo elementi concreti']}
+ {k:'Calamita',d:'«Dimmi che ho ragione»: cerchiamo chi e che cosa conferma la nostra idea e ascoltiamo poco il resto.',a:['Essere critici','Ascoltare gli altri','Non fermarsi alla prima soluzione']},
+ {k:'Abitudine',d:'Si sceglie come si è sempre fatto: si resta sullo stato attuale senza valutare davvero le alternative.',a:['Ricordare i propri obiettivi','Individuare altre possibilità','Riflettere su circostanze meno ovvie','Analizzare i pro e i contro']},
+ {k:'Quercia',d:'Si continua su una strada perché ci si è già investito tempo, soldi o impegno (spirale di impegno).',a:['Chiedere consigli a chi non era coinvolto','Mettersi in discussione']},
+ {k:'Conferma',d:'Pregiudizi e opinioni preconcette pesano più dei fatti: il passato domina il presente.',a:['Non permettere al passato di dominare il presente']},
+ {k:'Impostazione',d:'Il modo in cui il problema è posto orienta la risposta e fa perdere di vista l’obiettivo principale.',a:['Ricordare l’obiettivo principale','Adottare uno spirito critico']},
+ {k:'Sicumera',d:'Eccesso di fiducia: ci si ferma alla prima analisi e si sopravvaluta la propria soluzione.',a:['Non fermarsi all’analisi iniziale','Testare la soluzione in più casistiche']},
+ {k:'Prototipo',d:'Si giudica sul modello di riferimento, il caso tipico, ignorando i dati del caso concreto.',a:['Non ignorare mai i dati','Mettere in discussione i modelli di riferimento','Ricordare che il modello non è per forza vero']},
+ {k:'Catastrofe',d:'Un evento recente o eclatante, ricordato con vividezza, falsa la valutazione del rischio.',a:['Non farsi sviare dalla memoria','Acquisire dati aggiornati','Concentrarsi sulle valutazioni oggettive']},
+ {k:'Prudenza',d:'Eccesso di cautela: si aggiungono margini e timori fino a stimare male le probabilità.',a:['Definire le probabilità e valutare onestamente','Documentare il processo','Ascoltare chi non eccede in prudenza']},
+ {k:'Sfera magica',d:'Si crede di prevedere il futuro: previsioni basate su calcoli sbagliati o su soli elementi concreti.',a:['Essere disciplinati','Non fare calcoli sbagliati','Considerare solo elementi concreti']}
 ];
 // ==========================
 var $=function(i){return document.getElementById(i)};
@@ -190,14 +190,14 @@ $('fD').oninput=function(){ST.d=this.value;save()};
 $('fN').oninput=function(){ST.n=this.value;save()};
 function drawTr(){
  var h='';TR.forEach(function(t){var c=ST.p1==t.k?' p1':ST.p2==t.k?' p2':'';
-  h+='<div class="tc'+c+'" data-k="'+esc(t.k)+'">'+esc(t.k)+(c==' p1'?'<small>principale</small>':c==' p2'?'<small>seconda</small>':'')+'</div>'});
+  h+='<div class="tc'+c+'" data-k="'+esc(t.k)+'" title="'+esc(t.d)+'">'+esc(t.k)+(c==' p1'?'<small>principale</small>':c==' p2'?'<small>seconda</small>':'')+'</div>'});
  $('tg').innerHTML=h;
  $('tg').onclick=function(ev){var d=ev.target.closest?ev.target.closest('.tc'):null;if(!d)return;var k=d.getAttribute('data-k');
   if(ST.p1==k){ST.p1=ST.p2;ST.p2='';ST.a=''}else if(ST.p2==k){ST.p2=''}else if(!ST.p1){ST.p1=k}else{ST.p2=k}
   if(ST.a&&(trOf(ST.p1)||{a:[]}).a.concat((trOf(ST.p2)||{a:[]}).a).indexOf(ST.a)<0)ST.a='';
   save();drawTr()};
  var box='';[ST.p1,ST.p2].forEach(function(k,i){var t=trOf(k);if(!t)return;
-  box+='<div class="note" style="margin-top:10px"><b>'+esc(t.k)+'</b> · antidoti della pillola<ul class="ad" style="margin:6px 0 0;padding-left:20px">'+t.a.map(function(x){return '<li>'+esc(x)+'</li>'}).join('')+'</ul></div>'});
+  box+='<div class="note" style="margin-top:10px"><b>'+esc(t.k)+'</b>: '+esc(t.d)+'<br><i>Antidoti della pillola</i><ul class="ad" style="margin:6px 0 0;padding-left:20px">'+t.a.map(function(x){return '<li>'+esc(x)+'</li>'}).join('')+'</ul></div>'});
  $('adBox').innerHTML=box;
  var ok=!!ST.p1;$('cNext').className='card'+(ok?'':' hide');
  if(ok){var l='';[ST.p1,ST.p2].forEach(function(k){var t=trOf(k);if(!t)return;t.a.forEach(function(x){l+='<label style="display:block;margin:6px 0;cursor:pointer"><input type="radio" name="ad" value="'+esc(x)+'"'+(ST.a==x?' checked':'')+'> <b>'+esc(t.k)+':</b> '+esc(x)+'</label>'})});
@@ -252,7 +252,7 @@ function draw(){
  var cnt={},mx=0;TR.forEach(function(t){var a=rs.filter(function(r){return r.p==t.k}).length,b=rs.filter(function(r){return r.p2==t.k}).length;cnt[t.k]=[a,b];if(a+b>mx)mx=a+b});
  var order=TR.slice().sort(function(x,y){return (cnt[y.k][0]*1000+cnt[y.k][1])-(cnt[x.k][0]*1000+cnt[x.k][1])});
  h+='<div class="card"><h2>Quali trappole abbiamo incontrato</h2><p class="sub" style="margin:0 0 8px"><span style="color:var(--o)">■</span> principale · <span style="color:#9bb7f7">■</span> seconda scelta</p>';
- order.forEach(function(t){var c=cnt[t.k];h+='<div class="bar"><span class="nm">'+esc(t.k)+'</span><span class="tr"><span class="b1" style="width:'+(mx?100*c[0]/mx:0)+'%"></span><span class="b2" style="width:'+(mx?100*c[1]/mx:0)+'%"></span></span><span class="vl">'+c[0]+(c[1]?' + '+c[1]:'')+' ('+pct(c[0],n)+')</span></div>'});
+ order.forEach(function(t){var c=cnt[t.k];h+='<div class="bar"><span class="nm" title="'+esc(t.d)+'">'+esc(t.k)+'</span><span class="tr"><span class="b1" style="width:'+(mx?100*c[0]/mx:0)+'%"></span><span class="b2" style="width:'+(mx?100*c[1]/mx:0)+'%"></span></span><span class="vl">'+c[0]+(c[1]?' + '+c[1]:'')+' ('+pct(c[0],n)+')</span></div>'});
  h+='</div>';
  h+='<div class="card"><h2>Sicurezza e trappola</h2><table><tr><th>Trappola principale</th><th>Persone</th><th>Sicurezza media (1–5)</th><th>Antidoto più scelto</th></tr>';
  order.forEach(function(t){var x=rs.filter(function(r){return r.p==t.k});if(!x.length)return;var ac={},best='',bc=0;x.forEach(function(r){if(r.a){ac[r.a]=(ac[r.a]||0)+1;if(ac[r.a]>bc){bc=ac[r.a];best=r.a}}});
